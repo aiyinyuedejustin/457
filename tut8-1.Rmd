@@ -1,0 +1,72 @@
+---
+title: "tut8-1"
+author: '"Yukun Gao"'
+date: "2022/4/7"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## a)
+
+```{r}
+library(astsa)
+library(MASS)
+data(salt)
+```
+
+```{r}
+##plot time series
+plot.ts(salt)
+# The spectral analysis
+analysis_spec = mvspec(salt, log = "no")
+```
+```{r}
+# Find the first three dominant frenquencies
+dom_freq <-analysis_spec$details[order(analysis_spec$details[,3],
+                                       decreasing = TRUE),]
+#show the  three dominant frequencies 
+dom_freq[1,] 
+dom_freq[2,] 
+dom_freq[3,]
+```
+The dominant frequencies are: 0.0625, 0.0469, 0.1094       
+
+
+## b)
+
+```{r}
+#Cycle is 1/ frequency
+1/dom_freq[1,1] 
+1/dom_freq[2,1] 
+1/dom_freq[3,1]
+```
+As we can see, the cycles occurs at 16, 21.32196, 9.140768
+
+## c)
+
+```{r}
+##Obtain 90% CIs for the three dominant frequencies
+freq_ci_1 = 2*dom_freq[1,3]/qchisq(0.05,2)
+freq_ci_2 = 2*dom_freq[1,3]/qchisq(0.95,2)
+freq_ci_3 = 2*dom_freq[2,3]/qchisq(0.05,2)
+freq_ci_4 = 2*dom_freq[2,3]/qchisq(0.95,2)
+freq_ci_5 = 2*dom_freq[3,3]/qchisq(0.05,2)
+freq_ci_6 = 2*dom_freq[3,3]/qchisq(0.95,2)
+
+##Create data frame for the CI of three dominant frequencies and show them out
+data.frame(Dom_freq=c(dom_freq[1,1],dom_freq[2,1],dom_freq[3,1]), Spec=c(dom_freq[1,3],
+                                                                         dom_freq[2,3], dom_freq[3,3]), LowerBound=c(freq_ci_2,freq_ci_4,freq_ci_6),
+UpperBound=c(freq_ci_1,freq_ci_3,freq_ci_5))
+
+```
+
+Interpretation:
+
+1. For the first dominant frequency, we see the periodogram ordinate is 60.67, which lies within the  confidence intervals of the second and third peak. It is not significant.
+
+2. For the second dominant frequency, we see the periodogram ordinate is 33.4859, which lies within the confidence intervals of the first  and third peak. It is not significant.
+
+3. For the third dominant frequency, we see the periodogram ordinate is 23.6903, which lies within the confidence intervals of the second  and third peak. It is not significant.

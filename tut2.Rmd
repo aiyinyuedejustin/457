@@ -1,0 +1,47 @@
+---
+title: "tut2"
+author: '"Yukun Gao"'
+date: "2022/2/1"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+#library package
+library(astsa)
+```
+
+
+```{r}
+#length of series
+num=length(soi)
+#make empty vector for later use 
+A_I_C <-c()
+A_I_C_c<-c()
+B_I_C <-c()
+
+#for loop, do 30 times, first find "sigma square", then use formula to 
+#calculate AIC, AICc,BIC
+for (i in 1:30){
+  sigmasqr=ar(x=soi, order=i, aic=FALSE)$var.pred
+  A_I_C[i] <-log(sigmasqr)+(num+2*i)/num
+  A_I_C_c[i] <-log(sigmasqr)+(num+i)/(num-i-2)
+  B_I_C[i] <-log(sigmasqr) +i*log(num)/num
+}
+
+#make plots,it shows that minimum of AIC,AICc,BIC occurs at p=15
+ts.plot(A_I_C, type="o",col="red", ylab="AIC,AICc,BIC", xlab="p",ylim=c(-1.55,-1))
+lines(A_I_C_c+0.3,type="o",col="green")
+lines(B_I_C+1,type="o",col="blue")
+legend("topright", legend = c("AIC","AICc","BIC"),
+       cex=0.5,col=c("RED","GREEN","blue"), lty=1)
+grid(nx = NULL,
+     ny = NA,
+     lty = 3, col = "black", lwd = 1)
+
+
+```
+

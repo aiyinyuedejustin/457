@@ -1,0 +1,33 @@
+---
+title: "dataset_description"
+author: '"Yukun Gao"'
+date: "2022/4/9"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+I would like to choose the dataset in "astsa" called "unemp". It is a monthly U.S. Unemployment series. It range from 1948-1978 and there are 372 observations.
+
+```{r}
+#load data
+library(astsa)
+data("unemp")
+```
+
+
+```{r}
+x = unemp
+# add log transformation/ regular difference/ seasonal difference
+dx = diff(x); ddx = diff(dx, 12)
+#plot the new series
+plot.ts(cbind(x,dx,ddx),main = "Monthly Unemployment Over Time")
+```
+x is the original series. We see that there is seasonal pattern and an gradually increasing trend from the plot. To make the series stationary, we consider using regular difference as well as seasonal difference. We see that after doing difference for the series, it the mean seems to be constant, and the variance are no longer drifting. However, there are also some seasonality. After taking twelfth-order seasonal difference, the seasonal pattern diminish. We can look at the month plot.
+```{r}
+#plot month plot
+monthplot(ddx)
+```
+The transformed data appears to be stationary and we are now ready to fit a model.

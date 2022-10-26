@@ -1,0 +1,56 @@
+---
+title: "Tut457"
+author: '"Yukun Gao"'
+date: "2022/3/10"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+$x_t-1.5x_{t-1}+0.75 x_{t-2} = w_t$ where $\phi_1=1.5$ and $\phi_2=-0.75$
+
+We could write $\phi(z)= 1-1.5z+0.75z^2$ , set $\phi(z)=0$. We get $z_1 = 1+\frac{\sqrt{3}}{3}i=1+0.57735i$ and  $z_2= 1-\frac{\sqrt{3}}{3}i=1-0.57735i$.
+According to 3.10, $\gamma(h)=\phi_1\gamma(h-1)+\phi_2\gamma(h-2)$, for h=1,2,.. for causal AR(2) process. Both roots are outside the unit circle, so the model is causal. We can divide by $\gamma(0)$ to get the difference equation for the ACF.
+$\rho(h)=\phi_1\rho(h-1)-\phi_2\rho(h-2)$ for h=1,2,.... and we know $\rho(0)=1$
+and $\rho(1)=\rho(-1)=\frac{\phi_1}{1-\phi_2}$
+
+
+We know if  $z_1$ and $z_2$ are in conjugate pairs, $\rho(h)=a|z_1|^{-h}cos(h\theta+b)$. Then if $h=0$, $\rho(0)=acos(b)=1$ and $a= \frac{1}{cos(b)}$. If $h=1$, $\rho(1)=a*\frac{1}{|z_1|}cos(\theta+b)= \frac{\phi_1}{1-\phi_2}$. Dividing these two equations, we get $\frac{cos(\theta +b)}{cos(b)}= \frac{cos(\theta)cos(b)}{cos(b)}-\frac{sinc(\theta)sin(b)}{cos(b)}=cos(\theta)-sin(\theta)tan(b)=|z_1|*\frac{\phi_1}{1-\phi_2}$, which means $b= tan^{-1} \{ \frac{cos(\theta)-|z_1|*\frac{\phi_1}{1-\phi_2}}{sin(\theta)} \}$. We will use the formula for $a$ and $b$.
+
+```{r}
+#find roots of polynomial
+x=c(1,-1.5,0.75)
+root_poly<-polyroot(x)
+#the complex part is 0.57735, find theta
+theta<- atan(0.57735/1)
+#calculate abs(z1)=1.154701
+z1norm<- abs(root_poly[1])
+
+##calculate b
+b<- atan((cos(theta)-z1norm*1.5/(1+0.75))/sin(theta))
+## compute a
+a<-1/cos(b)
+
+#calculate the value of rho(h)
+h=c(0:10)
+rhoh<- a*z1norm^(-h)*cos(h*theta+b)
+rhoh
+```
+
+```{r}
+#plot the values using
+plot(rhoh, type = "h", xlab="lag",ylab="ACF" ,main="ACF plot for AR(2)")
+abline(h=0)
+```
+```{r}
+#generate ARMAacf to check answer
+new_acf <-ARMAacf(ar=c(1.5,-0.75),ma=0, lag.max=10)
+new_acf
+plot(new_acf, type = "h", xlab="lag",ylab="ACF" ,main="ACF plot using ARMAacf")
+abline(h=0)
+```
+
+we see that the plot of  ARMAacf correspond to our answers. 

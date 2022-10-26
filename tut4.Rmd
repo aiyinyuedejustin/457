@@ -1,0 +1,54 @@
+---
+title: "457TUT4"
+author: '"Yukun Gao"'
+date: "2022/3/3"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+```{r}
+set.seed(1221) #set seed
+n = 500 #length
+delta = 0.20 #delta
+MySSE = rep(0,50) #for later use, store sqrt of SSE
+Rsquare = rep(0,50) #for later use,Store coefficient of determination in percentage
+
+time = 1:n 
+AIC_output = rep(0,50) #store value for later use
+BIC_output = rep(0,50) #store value for later use
+for(i in 1:50){
+w = rnorm(n,0,sqrt(2)) #var=2
+x = ts(delta*time+w) #linear trend plus noise 
+
+regx = lm(x~0+time) #regression
+
+MySSE[i] = sqrt(sum(resid(regx)^2)) #store sqrt of SSE
+Rsquare[i] = summary(regx)$r.squared*100 #R2 in percentage
+AIC_output[i] = AIC(regx)/n - log(2*pi) #store AIC
+BIC_output[i] = BIC(regx)/n - log(2*pi) #store BIC
+}   #50 series
+cbind(MySSE[1:5],Rsquare[1:5]) #print out the five values of the square root of SSE and R2
+```
+
+```{r}
+plot(MySSE,type="l",main = "Squared root of SSE and R squared (%)",ylab="value",xlab="series",ylim=c(30,150)) #Plot the trends
+lines(Rsquare,col="blue")
+legend("topright", legend = c("Squared root of SSE","R Squared"),
+col = c("black","blue"),lty = 1,cex = 0.5) #add legend
+```
+
+```{r}
+cbind(AIC_output[1:5],BIC_output[1:5]) #Print the first five values of AIC and BIC. 
+```
+```{r}
+plot(AIC_output,type="l",main = "Trends of AIC and BIC",ylab="value",xlab="series",ylim=c(1.5,1.9))
+lines(BIC_output,col="red")# plot the trend
+legend("topright", legend = c("AIC","BIC"), 
+       col = c("black","red"),lty = 1,cex=0.6)# add legend
+```
+

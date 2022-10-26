@@ -1,0 +1,58 @@
+---
+title: "457tut3"
+author: '"Yukun Gao"'
+date: "2022/2/9"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+
+library(astsa)
+#import the data
+rawdata <- scan("anatolia_hati.txt")
+# convert to time series
+
+newdata <- ts(rawdata, start=1975,frequency = 12)
+```
+
+## (a)Print the time series; also show the the time associated with each measurement,and the position of each observation in the cycle.
+
+```{r}
+# print the time series
+print(newdata)
+```
+
+```{r}
+#show the the time associated with each measurement
+time(newdata)
+```
+
+```{r}
+#show the position of each observation in the cycle
+cycle(newdata)
+```
+
+## (b)Determine the series' frequency and interval between observations.
+
+```{r}
+#show the series' frequency
+frequency(newdata)
+#show the interval between observations
+deltat(newdata)
+```
+
+## (c)Plot three cycles of the time series, from the shallowest depth at the end of the winter rains (April) beginning in 1990, to see annual behaviour.
+
+
+```{r}
+# extract corresponding data, three cycles means from April 1990 to March 1993 
+data_c<- window(newdata, start=c(1990,4), end=c(1993,3))
+
+#plot the series
+plot(data_c, type="b", ylab="Depth to groundwater", main="The plot of change in depth of groundwater with time")
+```
+

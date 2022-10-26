@@ -1,0 +1,83 @@
+---
+title: "457 tut1"
+author: '"Yukun Gao"'
+date: "2022/1/25"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+## (a)
+
+```{r}
+# set seed so generate same output
+set.seed(011) 
+ #signal
+s_t1 <- c(rep(0,100), 10*exp(-(1:100)/20)*cos(2*pi*1:100/4))
+#signal plus white noise with mean 0 and sd of 1, x_t= s_t+w_t
+x_t1 <- s_t1+ rnorm(200)
+# plot time series
+plot.ts(x_t1, main="Signal plus noise Model in (a)",
+        col="green", ylab=expression("xt for (a)"))
+```
+The plot answers (c)
+
+
+## (b)
+
+```{r}
+# set seed so generate same output
+set.seed(011)
+#signal
+s_t2 <- c(rep(0,100), 10*exp(-(1:100)/200)*cos(2*pi*1:100/4))
+#signal plus white noise with mean 0 and sd of 1, x_t= s_t+w_t
+x_t2 <- s_t2+ rnorm(200) 
+# plot time series
+plot.ts(x_t2, main="Signal plus noise Model in (b)",
+        col="red",ylab=expression("xt for (b)"))
+```
+The plot answers (c)
+
+
+## (c)
+
+By looking at the two graph, we notice that the first half of the graph looks pretty similar. The signal $s_t$ begins at t=101, we see both model stay at center around 0 and show decrease in variance as t increases. However, the graph for Model in (a) shows faster decrease in variance than Model in (b).
+
+## (d)
+
+```{r}
+#generate signal modulator (i): exp{-t/20} 
+i<- exp(-(1:100)/20)
+#generate signal modulator (ii): exp{-t/200} 
+ii<- exp(-(1:100)/200)
+
+# plot signal modulator (i)
+plot.ts(i, col="green", ylab="signal modulator")
+#plot signal modulator (ii)
+lines(ii, col="red")
+#add legend
+legend("topright", legend = c("(i)","(ii)"),
+       cex=0.5,col=c("green","red"), lty=1)
+```
+
+
+By comparing signal modulator (i) and (ii), we clearly see that signal (i) decrease faster than (ii).
+
+
+## (e)
+
+$E(x_t) =E(s_t+w_t)= E(s_t) +E(w_t)= E(s_t)=\mu_x{t}$ which is constant, since $E(w_t)=0$ So we can just plot $s_t$ for the two models.
+
+
+```{r}
+#plot mean function for model in (a)
+plot.ts(s_t1 ,ylab=expression(mu[a]),
+        main="Mean of Model in (a)",col="green")
+#plot mean function for model in (b)
+plot.ts(s_t2 ,ylab=expression(mu[b]),
+        main="Mean of Model in (b)",col="red")
+```
+

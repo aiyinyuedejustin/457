@@ -1,0 +1,66 @@
+---
+title: "tut6"
+author: '"Yukun Gao"'
+date: "2022/3/16"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+```{r}
+#set seed
+set.seed(111)
+
+# create dataframe for later use
+mydataframe<- data.frame(
+                          "phi true"= rep(-0.5,10),
+                          "phi hat"=rep(0,10),
+                          "theta true"=-0.9,
+                          "theta hat"=rep(0,10),
+                          "sigma squre true"=rep(1,10),
+                          "sigma square hat"=rep(0,10))
+
+#simulate 10 times
+for (i in 1:10){
+  #simulate ARMA ts
+  arma1_1<- arima.sim(n=500, list(order= c(1,0,1),ar=-0.5,ma=-0.9),
+                       sd=1 )
+  #fit ARMA(1,1) model
+  fit <- arima(arma1_1, order= c(1,0,1))
+  #put into dataframe
+  mydataframe$phi.hat[i]<- fit$coef[1]
+  mydataframe$theta.hat[i]<- fit$coef[2]
+  mydataframe$sigma.square.hat[i]<- fit$sigma2
+}
+#print estimated parameters with true values
+mydataframe
+# plot phi hat along true phi values
+plot(mydataframe$phi.hat,ylim=c(-1,0), ylab= "phi hat", 
+     xlab="# of simulation", main="phi hat along true phi values")
+abline(h=-0.5,col="blue")
+legend("topright", legend = c("True Values","Estimated Values"),
+col = c("Blue","Black"),lty=c(1,NA),cex = 0.7,lwd=1,  
+        pch=c(NA,1), merge=FALSE)
+#plot theta hat along true theta values
+plot(mydataframe$theta.hat,ylim=c(-1.3,-0.7),
+     ylab= "theta hat", xlab="# of simulation", main="theta hat along true theta values")
+abline(h=-0.9,col="blue")
+legend("topright", legend = c("True Values","Estimated Values"),
+col = c("Blue","Black"),lty=c(1,NA),cex = 0.7,lwd=1,  
+        pch=c(NA,1), merge=FALSE)
+#plot sigma^2 hat along true sigma^2 values
+plot(mydataframe$sigma.square.hat, ylim=c(0,2), 
+     ylab= "sigma^2 hat", xlab="# of simulation", main="sigma^2 hat along true sigma^2 values")
+abline(h=1,col="blue")
+legend("topright", legend = c("True Values","Estimated Values"),
+col = c("Blue","Black"),lty=c(1,NA),cex = 0.7,lwd=1,  
+        pch=c(NA,1), merge=FALSE)
+```
+
+
+
+We see that the simulated values for $\hat{\theta}$, $\hat{\phi}$, $\hat{\sigma_w^2}$ are all near to the true value of them. There is no big fluctuations.

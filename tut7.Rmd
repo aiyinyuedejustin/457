@@ -1,0 +1,103 @@
+---
+title: "tut7"
+author: '"Yukun Gao"'
+date: "2022/3/30"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+```{r}
+#load the library
+library(astsa)
+#Loads specified data sets
+data(globtemp)
+```
+
+## (a)
+```{r}
+#plot the data
+plot(globtemp, xlab = "Year", ylab = "Global Temperature",
+col = "blue", main = "Global Temperature")
+```
+```{r}
+#plot ACF
+plot1 <- acf2(globtemp, max.lag= 60,main = "ACF and PACF Plots")
+```
+The sample ACF plot shows a slow decay to zero we might need to defference the data
+
+
+
+```{r}
+#difference the data
+firstdiff <- diff(globtemp)
+
+#plot the new data
+plot(firstdiff, xlab = "Year", ylab = "Global Temperature",
+main = "Global Temperature after Difference")
+```
+The first difference of Global Temperature data seems to be a stable process
+
+
+```{r}
+#Plot the ACF and PACF of the "first difference" data
+plot2 <-acf2(firstdiff, main = "ACF and PACF Plots", max.lag=60)
+```
+
+PACF approcimately cutoff at lag 3,  ACF approximately cutting off at lag 2. We consider there might be two models: 1. ARIMA(3, 1, 0) and ARIMA(0, 1, 2), and we will compare them. 
+
+## (b)
+```{r}
+#ARIMA(3, 1, 0) model
+sarima(globtemp, 3, 1, 0,details=FALSE)
+```
+
+For the proposed ARIMA(3, 1, 0) model, except fort the constant term, the p-values for all other parameter estimates are smaller than 0.05, which is significant.
+
+
+```{r}
+#ARIMA(0, 1, 2) model
+sarima(globtemp, 0, 1, 2,details=FALSE)
+```
+For the proposed ARIMA(0, 1, 2) model, the p-values for all parameter estimates are smaller than 0.05, which is significant.
+
+## (c)
+```{r}
+#analyse ARIMA(3, 1, 0) model
+Model1 <-sarima(globtemp, 3, 1, 0)
+#analyse ARIMA(0, 1, 2) model
+Model2<-  sarima(globtemp, 0, 1, 2)
+```
+
+
+There are no obvious patterns of the standardized residuals plot for both model.
+
+
+There is a spike at lag 18 for both modal in the ACF of Residuals plots, but it is not very significant at the 5% level which does not violate the randomness assumption. 
+
+The Normal Q-Q plots show that the normality assumption is valid, for both model, although there are some outliers. 
+
+The p-values of Ljung-Box statistics are all above the significant level for both models, which we cannot reject the null hypothesis that the residuals are
+independent.
+
+The two models's diagnostic from the plots are similar, we cannot select a better model. However, by comparing the AIC/AICc/BIC for two models, we will propose for ARIMA(0,1,2) to be the better model. Since the AIC/AICc/BIC are all smaller for ARIMA(0,1,2) model. 
+
+## (d)
+```{r}
+#Prediction for 10 periods
+prediction <- sarima.for(globtemp, n.ahead= 10, 0, 1, 2)
+# 5% Prediction interval
+upper95 <- prediction$pred + qnorm(0.95) * prediction$se
+lower95 <-prediction$pred - qnorm(0.95) * prediction$se
+
+
+data.frame("Prediction" = prediction$pred,
+"Lower Bound" = lower95, "Upper Bound" = upper95)
+
+```
+
+
