@@ -1,5 +1,5 @@
 ---
-title: "STA457 Final project"
+title: "STA457 Practice"
 author: '"Yukun Gao"'
 date: "2022/3/28"
 output: pdf_document
